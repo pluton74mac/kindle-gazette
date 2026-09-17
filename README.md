@@ -222,8 +222,13 @@ which also lists the e-ink constraints a new theme has to respect.
   hack, plus the boot watchdog that keeps the Special Offers `ad_screensaver`
   module evicted on ad-supported devices. See
   [`kindle/linkss/README.md`](kindle/linkss/README.md).
-- **live-e-ink.** A separate mode where the Mac *pushes* to the glass over
-  SSH — a glanceable second monitor, no agents, no server. See
+- **live-e-ink** (`live/`). The opposite mode for the same device: instead
+  of agents publishing and the Kindle pulling, your computer *pushes*
+  straight to the glass over SSH — a clock, a status panel, an annotation —
+  with no agents, no server and no viewer loop. It lives here because it
+  shares everything the gazette learned about the hardware (Tailscale SSH,
+  `eips`/FBInk painting, partial vs full refresh, keeping the device awake)
+  and is handy while developing or debugging the gazette itself. See
   [`live/README.md`](live/README.md).
 
 ## Remote access (Tailscale, optional)

@@ -7,7 +7,11 @@ Tailscale SSH with `eips`.
 Not to be confused with **agent-gazette** (the rest of this repo): there,
 agents publish editions and the *device pulls* and pages through them. Here
 the *PC pushes*, there are no agents, no server, no viewer loop — just a
-framebuffer at the other end of an SSH session.
+framebuffer at the other end of an SSH session. It is in this repo because
+it uses the same device access and painting mechanics the gazette relies on
+(and was worked out while building it), and because it is the quickest way
+to see what the panel is showing while you work on the gazette —
+`screenshot.sh` is the gazette's own debugging tool.
 
 ## Scripts (run on the Mac)
 
