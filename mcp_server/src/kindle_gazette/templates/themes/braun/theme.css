@@ -1,0 +1,152 @@
+/* Theme "braun" — as little design as possible: Helvetica, wide margins, one
+   rule where a rule is genuinely needed, recessed key-cap controls, data as
+   the loudest thing on the page. Weights matter more than sizes here: 200 for
+   stat values, 300 for ordinals, 400 for body, 500 for titles — nothing is
+   bold. Cards are not boxes; the front page is a ruled list.
+
+   Two-part theme.css: the required :root token block, then component
+   overrides (inlined after base.html's shared styles). Grayscale on multiples
+   of #11, local font stacks only, tap targets ≥ 90px. */
+
+:root {
+  /* Type. Sans in every slot — the serif slot is aliased so any unconverted
+     rule stays on-style. */
+  --font-sans: "Helvetica Neue", Helvetica, "DejaVu Sans", "Liberation Sans", Arial, sans-serif;
+  --font-serif: "Helvetica Neue", Helvetica, "DejaVu Sans", "Liberation Sans", Arial, sans-serif;
+  --font-mono: Menlo, "DejaVu Sans Mono", "Liberation Mono", monospace;
+
+  --fs-masthead: 32px;       /* small, wide-tracked, uppercase */
+  --fs-edition: 22px;
+  --fs-section: 30px;
+  --fs-card-title: 34px;     /* weight 500, not bold */
+  --fs-body: 26px;
+  --fs-small: 22px;
+  --fs-button: 26px;
+  --fs-article-title: 52px;  /* weight 400 */
+  --fs-article-heading: 30px;
+  --fs-article-body: 26px;
+
+  --lh-body: 1.35;
+  --lh-article: 1.5;
+
+  --ink: #000;
+  --paper: #fff;
+  --ink-muted: #555;
+  --ink-faint: #888;
+  --rule-strong: #000;
+  --rule-faint: #ccc;
+
+  --progress-fill: #000;     /* solid ink on a #ccc track */
+
+  --segment-1: #222;
+  --segment-2: #666;
+  --segment-3: #999;
+  --segment-4: #ccc;
+
+  --page-margin: 60px;       /* wide margins carry the design */
+  --gap: 20px;
+  --masthead-h: 120px;
+  --footer-h: 150px;
+  --button-h: 90px;          /* e-ink finger target minimum */
+  --exit-w: 200px;
+
+  --border-hairline: 2px;
+  --border-thin: 2px;
+  --border-card: 0px;        /* cards are not boxes here */
+  --border-button: 0px;      /* buttons are filled key-caps */
+  --masthead-rule: 2px;      /* single solid, inset to the page margin */
+
+  --progress-bar-h: 14px;    /* a hairline track: no border, #ccc fill */
+  --stacked-bar-h: 36px;     /* no border, no segment dividers */
+
+  --article-column-gap: 48px;
+
+  /* Theme-local. */
+  --braun-track: .14em;      /* letter-spacing for controls and labels */
+  --braun-key: #ccc;         /* key-cap fill */
+}
+
+/* ── Component overrides ─────────────────────────────────────────── */
+
+/* Masthead: small tracked caps sitting on the baseline; the rule stops short
+   of the page edge — that inset is the whole masthead treatment. */
+.masthead {
+  align-items: flex-end;
+  padding-bottom: 18px;
+  border-bottom: none;
+  position: relative;
+}
+.masthead::after {
+  content: "";
+  position: absolute;
+  left: var(--page-margin);
+  right: var(--page-margin);
+  bottom: 0;
+  height: var(--masthead-rule);
+  background: var(--ink);
+}
+.masthead-title {
+  font-weight: 400;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+}
+.edition-stamp { color: var(--ink-muted); }
+
+.content { padding: 30px var(--page-margin); }
+
+/* Front page: a ruled list, not a grid of boxes. Each row carries a light
+   decorative ordinal on the right (nth-child, never data). */
+.card-grid {
+  grid-template-columns: 1fr;
+  grid-auto-rows: auto;
+  gap: 0;
+  counter-reset: braun-card;
+}
+.card {
+  counter-increment: braun-card;
+  border: none;
+  border-bottom: 2px solid var(--rule-faint);
+  padding: 26px 110px 26px 0;
+  position: relative;
+}
+.card::after {
+  content: counter(braun-card);
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 60px;
+  font-weight: 300;
+  color: var(--ink-muted);
+}
+.card-title { font-weight: 500; }
+
+/* Footer: recessed key-caps — no border, a flat #ccc fill, black label; the
+   one primary action is inverted. */
+.btn {
+  background: var(--braun-key);
+  font-weight: 400;
+  letter-spacing: var(--braun-track);
+  text-transform: uppercase;
+  padding: 0 30px;
+}
+.btn-exit { background: var(--ink); color: var(--paper); }
+.hint { letter-spacing: .06em; }
+
+/* Figures: thin borderless tracks, no swatch outlines, light numerals. */
+.pbar-track { border: none; padding: 0; background: var(--braun-key); }
+.stacked-track { border: none; }
+.stacked-seg { border-right: none; }
+.legend-swatch { border: none; }
+.fstat-value { font-weight: 200; }
+.fcallout-alert { text-align: left; padding: 24px var(--gap); font-weight: 500; }
+/* Link rows: the front page's ruled list, indoors — same rule, same rhythm,
+   the note in the theme's tracked-caps label voice. */
+.flink-row { padding: 18px 0; border-bottom: 2px solid var(--rule-faint); }
+.flink-note { letter-spacing: var(--braun-track); text-transform: uppercase; }
+
+/* Edition: light title, quiet byline, unjustified would fight the grid — keep
+   the shared justification but soften headings. */
+.article-title { font-weight: 400; }
+.article-flow h2 { font-weight: 500; }
+.article-byline { border-bottom-color: var(--ink); letter-spacing: var(--braun-track); }

@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{# gazette-theme override: identical to the shared article.html except for the
+   pagination math in the script at the bottom — each viewport-wide page holds
+   TWO CSS columns (broadsheet style, with the column-rule in theme.css)
+   instead of one. Keep everything else in lockstep with templates/
+   article.html. #}
+{% block content %}
+<div class="article-viewport" id="viewport">
+  <div class="article-flow" id="flow">
+    <h1 class="article-title">{{ article_title }}</h1>
+    {% if byline %}<div class="article-byline">{{ byline }}</div>{% endif %}
+    {% for block in blocks %}
+    {% if block.kind == "heading" %}<h2>{{ block.text }}</h2>
+    {% elif block.kind == "figure" %}{% set f = block.figure %}
+    <figure class="article-figure">
+      {% if f.kind == "sparkline" %}
+      {# Geometry comes from _sparkline_geometry(); classes are shared with the
+         line_chart figure's baseline so the two read as one species. #}
+      <svg class="figure-svg" viewBox="0 0 {{ f.chart.width }} {{ f.chart.height }}">
+        <rect class="spark-frame" x="1" y="1" width="{{ f.chart.width - 2 }}" height="{{ f.chart.height - 2 }}"/>
+        {% if f.chart.baseline_y is not none %}
+        <line class="spark-baseline" x1="0" y1="{{ f.chart.baseline_y }}" x2="{{ f.chart.width }}" y2="{{ f.chart.baseline_y }}"/>
+        {% endif %}
+        <polyline class="spark-line" points="{{ f.chart.points }}"/>
+        {% for px, py in f.chart.dots %}
+        <circle class="spark-dot" cx="{{ px }}" cy="{{ py }}" r="4"/>
+        {% endfor %}
+      </svg>
+      {% elif f.kind == "line_chart" %}
+      {% set c = f.chart %}
+      {# Series differ by dash pattern only — all strokes are var(--ink). #}
+      <svg class="figure-svg" viewBox="0 0 {{ c.width }} {{ c.height }}">
+        {% for tick in c.ticks %}
+        <line class="fline-grid" x1="{{ c.plot_x }}" y1="{{ tick.y }}" x2="{{ c.width }}" y2="{{ tick.y }}"/>
+        <text class="fline-tick" x="{{ c.tick_x }}" y="{{ tick.text_y }}" text-anchor="end">{{ tick.label }}</text>
+        {% endfor %}
+        <rect class="fline-frame" x="{{ c.frame_x }}" y="1" width="{{ c.frame_w }}" height="{{ c.frame_h }}"/>
+        {% if c.baseline_y is not none %}
+        <line class="spark-baseline" x1="{{ c.plot_x }}" y1="{{ c.baseline_y }}" x2="{{ c.width }}" y2="{{ c.baseline_y }}"/>
+        {% endif %}
+        {% for s in c.series %}
+        <polyline class="fline-series" points="{{ s.points }}"{% if s.dash %} stroke-dasharray="{{ s.dash }}"{% endif %}/>
+        {% endfor %}
+        {% for lab in c.x_labels %}
+        <text class="fline-xlabel" x="{{ lab.x }}" y="{{ c.label_y }}" text-anchor="{{ lab.anchor }}">{{ lab.text }}</text>
+        {% endfor %}
+      </svg>
+      <div class="fline-legend">
+        {% for s in c.series %}
+        <span class="fline-key">
+          <svg class="fline-sample" width="60" height="10" viewBox="0 0 60 10">
+            <line class="fline-series" x1="0" y1="5" x2="60" y2="5"{% if s.dash %} stroke-dasharray="{{ s.dash }}"{% endif %}/>
+          </svg>
+          <span>{{ s.label }}</span>
+        </span>
+        {% endfor %}
+      </div>
+      {% elif f.kind == "heatmap" %}
+      {# Cell fills are panel-exact grays computed in Python — no dithering. #}
+      <div class="fheat-grid" style="grid-template-columns: {{ f.grid.gutter }}px repeat({{ f.grid.cols }}, {{ f.grid.cell }}px)">
+        {% if f.grid.col_labels %}
+        <div></div>
+        {% for label in f.grid.col_labels %}<div class="fheat-col-label">{{ label }}</div>{% endfor %}
+        {% endif %}
+        {% for row in f.grid.rows %}
+        <div class="fheat-row-label" style="height: {{ f.grid.cell }}px">{{ row.label }}</div>
+        {% for cell in row.cells %}
+        <div class="fheat-cell{% if cell.empty %} fheat-null{% endif %}" style="height: {{ f.grid.cell }}px{% if cell.color %}; background: {{ cell.color }}{% endif %}"></div>
+        {% endfor %}
+        {% endfor %}
+      </div>
+      {% elif f.kind == "bars" %}
+      {% for bar in f.bars %}
+      <div class="pbar">
+        <div class="pbar-head">
+          <span class="pbar-label">{{ bar.label }}</span>
+          <span class="pbar-readout">{{ bar.readout }}</span>
+        </div>
+        <div class="pbar-track">
+          <div class="pbar-fill" style="width: {{ bar.percent }}%"></div>
+          {% if bar.target_percent is not none %}<div class="pbar-tick" style="left: {{ bar.target_percent }}%"></div>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+      {% elif f.kind == "stacked_bar" %}
+      {# Segment widths come from _stacked_segments(); the legend below names
+         each segment, since e-ink grays alone can't be told apart. #}
+      <div class="stacked-track">
+        {% for seg in f.segments %}
+        <div class="stacked-seg seg-{{ seg.palette }}" style="width: {{ seg.percent }}%"></div>
+        {% endfor %}
+      </div>
+      <div class="legend">
+        {% for seg in f.segments %}
+        <div class="legend-item">
+          <span class="legend-swatch seg-{{ seg.palette }}"></span>
+          <span>{{ seg.label }} ({{ seg.readout }})</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% elif f.kind == "image" %}
+      <img class="figure-img" src="{{ f.src }}" alt="{{ f.caption or '' }}">
+      {% elif f.kind == "table" %}
+      <table class="ftable">
+        <thead>
+          <tr>{% for label, align in f.columns %}<th class="ftable-{{ align }}">{{ label }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for row in f.rows %}
+          <tr>{% for cell, align in row %}<td class="ftable-{{ align }}">{{ cell }}</td>{% endfor %}</tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% elif f.kind == "stat_row" %}
+      <div class="fstat-row">
+        {% for stat in f.stats %}
+        <div class="fstat">
+          <div class="fstat-value">{{ stat.value }}{% if stat.unit %}<span class="fstat-unit">{{ stat.unit }}</span>{% endif %}</div>
+          <div class="fstat-label">{{ stat.label }}</div>
+          {% if stat.delta %}<div class="fstat-delta">{{ stat.arrow }}{% if stat.arrow %} {% endif %}{{ stat.delta }}</div>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% elif f.kind == "checklist" %}
+      <ul class="fcheck">
+        {# f['items'] — attribute lookup would hit dict.items instead. #}
+        {% for item in f['items'] %}
+        <li class="fcheck-item fcheck-{{ item.state }}">
+          <span class="fcheck-box">{% if item.state == "skipped" %}&#x2715;{% endif %}</span>
+          <span class="fcheck-text">{{ item.text }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% elif f.kind == "callout" %}
+      <div class="fcallout fcallout-{{ f.style }}">{{ f.text }}</div>
+      {% elif f.kind == "timeline" %}
+      {# Time flows down the column: gutter label, rule with a dot per event, text. #}
+      <div class="ftl">
+        {% for ev in f.events %}
+        <div class="ftl-row{% if ev.emphasis %} ftl-em{% endif %}">
+          <div class="ftl-time">{{ ev.time }}</div>
+          <div class="ftl-text">{{ ev.text }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% elif f.kind == "qr" %}
+      {# Natural size only — the renderer already picked an integer module scale. #}
+      <img class="fqr-img" src="{{ f.src }}" width="{{ f.size }}" height="{{ f.size }}"
+           alt="{{ f.caption or 'QR code' }}">
+      {% elif f.kind == "link_list" %}
+      {# Each row is a real element carrying data-action, so browser.py's tap
+         extraction picks it up exactly like a footer button. Rows sit inside a
+         column here, so the row rule reads as a period index entry. #}
+      <div class="flink">
+        {% for link in f.links %}
+        <div class="flink-row" data-action="navigate" data-target="{{ link.nav_target }}" data-label="{{ link.text }}">
+          <span class="flink-text">{{ link.text }}</span>
+          {% if link.note %}<span class="flink-note">{{ link.note }}</span>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if f.caption %}<figcaption class="figure-caption">{{ f.caption }}</figcaption>{% endif %}
+    </figure>
+    {% else %}<p>{{ block.text }}</p>{% endif %}
+    {% endfor %}
+  </div>
+</div>
+<script>
+/* Horizontal pagination: the flow is a fixed-height CSS multicol where each
+   column is exactly one viewport-wide page; the browser does line-level
+   breaking, so lines never split across pages. The renderer drives these two
+   hooks — count pages once, then shift + retoggle nav for each screenshot. */
+(function () {
+  var vp = document.getElementById("viewport");
+  var flow = document.getElementById("flow");
+  var basePath = {{ base_path | tojson }};
+  var w = vp.clientWidth;
+  var gap = parseFloat(getComputedStyle(flow).columnGap) || 0;
+  /* Two columns per page: column + gap + column spans exactly the viewport,
+     so one page still advances by (w + gap) and the shared page-count and
+     show-page math below is unchanged. */
+  flow.style.columnWidth = ((w - gap) / 2) + "px";
+  var pageCount = 1;
+
+  /* Overflow columns extend scrollWidth by (w + gap) each; measure before any
+     transform (a translated flow no longer reports rightward overflow). The
+     count is taken when the renderer asks for it — after the document's load
+     event — not at parse time: un-sized images (figure data-URIs) have zero
+     height until they decode, so an early measurement undercounts the pages
+     and silently drops the edition's tail. */
+  window.__gazettePageCount = function () {
+    pageCount = Math.max(1, Math.round((vp.scrollWidth + gap) / (w + gap)));
+    return pageCount;
+  };
+  window.__gazetteShowPage = function (i) {
+    flow.style.transform = "translateX(" + (-i * (w + gap)) + "px)";
+    var prev = document.getElementById("prev");
+    var next = document.getElementById("next");
+    var ind = document.getElementById("page-indicator");
+    prev.hidden = i === 0;
+    next.hidden = i >= pageCount - 1;
+    ind.hidden = pageCount <= 1;
+    ind.textContent = "Page " + (i + 1) + " of " + pageCount;
+    prev.dataset.target = i <= 1 ? basePath : basePath + "/p" + i;
+    next.dataset.target = basePath + "/p" + (i + 2);
+  };
+  window.__gazetteShowPage(0);
+})();
+</script>
+{% endblock %}
+{% block footer %}
+<div class="btn" data-action="navigate" data-target="{{ back }}" data-label="Back">&lt; BACK</div>
+<div class="btn" id="prev" hidden data-action="navigate" data-target="" data-label="Previous page">&#x25C0; PREV</div>
+<div class="page-indicator" id="page-indicator" hidden></div>
+<div class="btn" id="next" hidden data-action="navigate" data-target="" data-label="Next page">NEXT &#x25B6;</div>
+<div class="btn btn-exit" data-action="exit" data-label="Exit">EXIT</div>
+{% endblock %}

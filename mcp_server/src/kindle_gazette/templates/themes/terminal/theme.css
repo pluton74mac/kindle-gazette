@@ -1,0 +1,128 @@
+/* Theme "terminal" — technical console: monospace throughout, inverted
+   status-line masthead, banded card slots, bracketed tap targets, caret-led
+   link rows.
+
+   Two-part theme.css: the required :root token block (every token base.html
+   consumes), then component overrides — which work because base.html inlines
+   theme.css after its own shared <style> block. Everything stays grayscale
+   (multiples of #11), offline (local font stacks only), tap targets ≥ 90px.
+   See templates/themes/README.md. */
+
+:root {
+  /* Type. One mono face does all the work in this theme; the serif and sans
+     slots are aliased to it so any unconverted rule stays on-style. */
+  --font-mono: Menlo, "DejaVu Sans Mono", "Liberation Mono", monospace;
+  --font-serif: Menlo, "DejaVu Sans Mono", "Liberation Mono", monospace;
+  --font-sans: Menlo, "DejaVu Sans Mono", "Liberation Mono", monospace;
+
+  --fs-masthead: 40px;
+  --fs-edition: 22px;
+  --fs-section: 32px;
+  --fs-card-title: 28px;
+  --fs-body: 26px;
+  --fs-small: 22px;
+  --fs-button: 30px;
+  --fs-article-title: 44px;
+  --fs-article-heading: 30px;
+  --fs-article-body: 25px;
+
+  --lh-body: 1.3;
+  --lh-article: 1.5;
+
+  --ink: #000;
+  --paper: #fff;
+  --ink-muted: #555;
+  --ink-faint: #888;
+  --rule-strong: #000;
+  --rule-faint: #bbb;
+
+  --progress-fill: #444;
+
+  --segment-1: #222;
+  --segment-2: #666;
+  --segment-3: #999;
+  --segment-4: #ccc;
+
+  --page-margin: 30px;
+  --gap: 20px;
+  --masthead-h: 96px;
+  --footer-h: 130px;
+  --button-h: 90px;          /* e-ink finger target minimum */
+  --exit-w: 200px;
+
+  --border-hairline: 2px;
+  --border-thin: 3px;
+  --border-card: 3px;
+  --border-button: 4px;
+  --masthead-rule: 3px;
+
+  --progress-bar-h: 30px;
+  --stacked-bar-h: 52px;
+
+  --article-column-gap: 48px;
+
+  /* Theme-local additions. Prefixed with the theme name so they can never
+     collide with a future shared token. */
+  --terminal-track: .08em;   /* base letter-spacing for mono caps */
+  --terminal-track-wide: .14em;
+}
+
+/* ── Component overrides ─────────────────────────────────────────── */
+
+/* Masthead: inverted status line, solid rule, no double border. */
+.masthead {
+  background: var(--ink);
+  color: var(--paper);
+  border-bottom: none;
+  box-shadow: inset 0 -8px 0 0 var(--paper), inset 0 -11px 0 0 var(--ink);
+}
+.masthead-title { letter-spacing: .04em; }
+.edition-stamp {
+  color: var(--paper);
+  letter-spacing: var(--terminal-track);
+  text-transform: uppercase;
+}
+
+.content { padding: 26px var(--page-margin); }
+
+/* Cards: numbered slot header band, severity chip pinned to the bottom. */
+.card-grid { grid-auto-rows: minmax(140px, 300px); gap: 24px; }
+.card {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.card-title {
+  background: var(--ink);
+  color: var(--paper);
+  margin: 0;
+  padding: 8px 14px;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.card-line { padding: 8px 16px; }
+.card-line:first-of-type { padding-top: 16px; }
+
+/* Footer: bracketed tap targets. */
+.footer { border-top: var(--border-thin) solid var(--ink); }
+.btn { letter-spacing: .06em; font-weight: bold; }
+.btn-exit::before { content: "[ "; }
+.btn-exit::after { content: " ]"; }
+.hint::before { content: "> "; }
+.hint { letter-spacing: .06em; }
+.page-indicator {
+  letter-spacing: var(--terminal-track);
+  text-transform: uppercase;
+}
+
+/* Figures: link rows are console list entries — a caret marks the tappable
+   line, a solid rule closes it, and the note reads as a tracked status field
+   (same register as the alert callout above it). */
+.flink-row { border-bottom: var(--border-thin) solid var(--ink); }
+.flink-text::before { content: "> "; }
+.flink-note { letter-spacing: var(--terminal-track-wide); text-transform: uppercase; }
+.fcallout-alert { text-align: left; letter-spacing: .02em; text-transform: uppercase; }
+
+/* Edition prose. */
+.article-byline { letter-spacing: .12em; border-bottom-width: var(--border-thin); border-bottom-color: var(--ink); }
+.article-flow p { text-align: left; }   /* mono + justify = rivers */

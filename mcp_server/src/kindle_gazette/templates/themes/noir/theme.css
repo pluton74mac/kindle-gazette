@@ -1,0 +1,62 @@
+/* Theme "noir" — heavier ink on the same broadsheet bones: thicker rules and
+   borders, darker muted text, and every flat gray snapped to the panel's
+   exact 16 levels (multiples of #11) so surfaces stay flat instead of picking
+   up dither texture. Token-only variant of "classic": same layout metrics,
+   different ink. See templates/themes/README.md. */
+
+:root {
+  /* Type. Serif masthead for the newspaper flavor; sans for data-dense body. */
+  --font-serif: Georgia, "DejaVu Serif", "Liberation Serif", serif;
+  --font-sans: "Helvetica Neue", Helvetica, "DejaVu Sans", "Liberation Sans", Arial, sans-serif;
+  --font-mono: Menlo, "DejaVu Sans Mono", "Liberation Mono", monospace;
+
+  --fs-masthead: 46px;
+  --fs-edition: 24px;
+  --fs-section: 32px;      /* home's empty-state note */
+  --fs-card-title: 30px;
+  --fs-body: 26px;         /* figure rows, card summaries */
+  --fs-small: 22px;        /* captions, notes, legends, hints */
+  --fs-button: 34px;
+  --fs-article-title: 46px;
+  --fs-article-heading: 30px;
+  --fs-article-body: 25px;
+
+  --lh-body: 1.35;
+  --lh-article: 1.45;
+
+  /* Ink. Panel-exact grays only (multiples of #11). */
+  --ink: #000;
+  --paper: #fff;
+  --ink-muted: #444;
+  --ink-faint: #777;
+  --rule-strong: #000;
+  --rule-faint: #999;
+
+  --progress-fill: #222;       /* bars figure fill */
+
+  /* Stacked-bar segment palette, cycled in order. */
+  --segment-1: #111;
+  --segment-2: #555;
+  --segment-3: #999;
+  --segment-4: #ccc;
+
+  /* Layout. Screen is 1072x1448; the chrome heights below define the content
+     band between masthead and footer. */
+  --page-margin: 30px;
+  --gap: 20px;
+  --masthead-h: 96px;
+  --footer-h: 130px;         /* nav band: button + breathing room */
+  --button-h: 90px;          /* e-ink finger target minimum */
+  --exit-w: 180px;
+
+  --border-hairline: 2px;
+  --border-thin: 3px;
+  --border-card: 4px;
+  --border-button: 5px;
+  --masthead-rule: 8px;      /* heavy bar under the masthead */
+
+  --progress-bar-h: 24px;    /* bars figure track */
+  --stacked-bar-h: 40px;     /* stacked_bar figure track */
+
+  --article-column-gap: 48px;
+}

@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.DS_Store
+.claude/
+*.tmp
+viewer.pid
+*.flag
+.venv/
+mcp_server/preview/

@@ -1,0 +1,159 @@
+/* Theme "slate" — contemporary editorial: near-black slate ink (#111) on
+   paper, serif prose and headlines against wide-tracked uppercase sans
+   micro-labels, and one solid slate band per page as the rhythm (now carried
+   by the alert callout, the darkest thing an edition can put on a page). The
+   source identity's clay accent has no grayscale equivalent, so its job
+   passes to the solid band and the filled Close button — never a lone
+   mid-gray fill.
+
+   Two-part theme.css: the required :root token block, then component
+   overrides (inlined after base.html's shared styles). Grayscale on
+   multiples of #11, local stacks only, tap targets ≥ 90px. */
+
+:root {
+  /* Type. Serif for prose, headlines and heroes; sans for micro-labels only,
+     always uppercase and wide-tracked. */
+  --font-serif: Georgia, "DejaVu Serif", "Liberation Serif", serif;
+  --font-sans: "Helvetica Neue", Helvetica, "DejaVu Sans", "Liberation Sans", Arial, sans-serif;
+  --font-mono: Menlo, "DejaVu Sans Mono", "Liberation Mono", monospace;
+
+  --fs-masthead: 38px;       /* serif, sentence case */
+  --fs-edition: 21px;        /* sans micro-label */
+  --fs-section: 30px;
+  --fs-card-title: 38px;
+  --fs-body: 27px;
+  --fs-small: 20px;          /* the micro-label size */
+  --fs-button: 26px;
+  --fs-article-title: 62px;
+  --fs-article-heading: 20px; /* a label, not a big heading */
+  --fs-article-body: 28px;
+
+  --lh-body: 1.4;
+  --lh-article: 1.55;
+
+  /* Slate, not pure black — the theme's signature. */
+  --ink: #111;
+  --paper: #fff;
+  --ink-muted: #333;
+  --ink-faint: #888;
+  --rule-strong: #111;
+  --rule-faint: #ccc;        /* every rule in the theme */
+
+  --progress-fill: #111;
+
+  --segment-1: #222;
+  --segment-2: #666;
+  --segment-3: #999;
+  --segment-4: #ccc;
+
+  --page-margin: 56px;
+  --gap: 20px;
+  --masthead-h: 120px;
+  --footer-h: 150px;
+  --button-h: 90px;          /* e-ink finger target minimum */
+  --exit-w: 200px;
+
+  --border-hairline: 2px;
+  --border-thin: 2px;
+  --border-card: 0px;
+  --border-button: 2px;      /* outlined; the primary is filled */
+  --masthead-rule: 2px;
+
+  --progress-bar-h: 14px;    /* no border, #ccc track */
+  --stacked-bar-h: 44px;     /* no border, no dividers */
+
+  --article-column-gap: 48px;
+
+  /* Theme-local. */
+  --slate-track: .22em;      /* micro-label tracking */
+  --slate-label: #888;
+  --slate-radius: 8px;       /* the only radius in the theme */
+}
+
+/* ── Component overrides ─────────────────────────────────────────── */
+
+/* Masthead on paper: serif wordmark closed by a bold sans slash (decoration
+   on an already-tapped element — no new tap geometry). */
+.masthead { border-bottom: var(--masthead-rule) solid var(--rule-faint); }
+.masthead-title { letter-spacing: -.01em; }
+.masthead-title::after {
+  content: "/";
+  font-family: var(--font-sans);
+  font-weight: bold;
+}
+.edition-stamp {
+  font-family: var(--font-sans);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #555;
+}
+
+.content { padding: 30px var(--page-margin); }
+
+/* Front page: generous ruled rows, serif titles. */
+.card-grid { grid-template-columns: 1fr; grid-auto-rows: auto; gap: 0; }
+.card { border: none; border-bottom: 2px solid var(--rule-faint); padding: 32px 0; }
+.card-title { font-weight: bold; letter-spacing: -.01em; }
+.card-line { color: var(--ink-muted); }
+
+/* Footer: outlined rounded buttons, primary filled slate. */
+.btn {
+  font-family: var(--font-sans);
+  border-radius: var(--slate-radius);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.btn-exit { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.hint { font-family: var(--font-sans); letter-spacing: .14em; text-transform: uppercase; }
+
+/* The slate band: the alert callout, set left and given the band's generous
+   padding — one solid slate field per page, never two. (No full-bleed here:
+   the edition flow is a paginated multicol, and an element overflowing its
+   column would only be clipped by the viewport anyway.) */
+.fcallout-alert {
+  padding: 30px var(--gap);
+  text-align: left;
+  font-family: var(--font-serif);
+  font-size: var(--fs-body);
+}
+
+/* Micro-labels do the work: sans, tracked, uppercase, faint. */
+.pbar-readout,
+.figure-caption,
+.fstat-label,
+.flink-note {
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  letter-spacing: var(--slate-track);
+  text-transform: uppercase;
+  color: var(--slate-label);
+}
+.fstat-value { letter-spacing: -.05em; }
+
+/* Figure tracks: quiet and borderless, solid slate fill — a mid-gray fill
+   would vanish against the #ccc track. */
+.pbar-track { border: none; padding: 0; background: var(--rule-faint); }
+.stacked-track { border: none; }
+.stacked-seg { border-right: none; }
+.legend-swatch { border: none; }
+.legend-item { font-family: var(--font-sans); }
+
+/* Link rows: the front page's generous ruled rows, indoors. */
+.flink-row { padding: 26px 0; border-bottom-color: var(--rule-faint); }
+
+/* Edition: serif prose, left-aligned; the section heading is a label. */
+.article-title { letter-spacing: -.025em; line-height: 1.08; }
+.article-byline {
+  letter-spacing: var(--slate-track);
+  color: var(--slate-label);
+  border-bottom-color: var(--rule-faint);
+}
+.article-flow p { text-align: left; }
+.article-flow h2 {
+  font-family: var(--font-sans);
+  font-weight: normal;
+  letter-spacing: var(--slate-track);
+  text-transform: uppercase;
+  color: var(--slate-label);
+  margin: 28px 0 10px;
+}

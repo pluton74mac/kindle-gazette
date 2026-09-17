@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp_server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Install dependencies
+        run: uv sync --dev
+      - name: Install Chromium for the browser-tier tests
+        run: uv run playwright install chromium --with-deps
+      - name: Byte-compile sources
+        run: uv run python -m compileall src
+      - name: Run test suite
+        run: uv run pytest -q
+
+  kindle-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Shell syntax check (sh -n)
+        run: |
+          for script in kindle/bin/gazette.sh kindle/bin/show_static.sh kindle/bin/stop.sh; do
+            echo "checking $script"
+            sh -n "$script"
+          done

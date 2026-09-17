@@ -1,0 +1,36 @@
+{
+	"items": [
+	{
+		"name": "Kindle Gazette",
+		"priority": 0,
+		"items": [
+		{
+			"name": "Start Gazette (interactive)",
+			"priority": 1,
+			"action": "/mnt/us/extensions/kindle-gazette/bin/gazette.sh",
+			"params": "http://YOUR_SERVER_IP:8888",
+			"exitmenu": false
+		},
+		{
+			"name": "---"
+		},
+		{
+			"name": "Show Home (static test)",
+			"priority": 2,
+			"action": "/mnt/us/extensions/kindle-gazette/bin/show_static.sh",
+			"params": "home",
+			"exitmenu": false
+		},
+		{
+			"name": "---"
+		},
+		{
+			"name": "Stop Gazette",
+			"priority": 3,
+			"action": "/mnt/us/extensions/kindle-gazette/bin/stop.sh",
+			"exitmenu": false
+		}
+		]
+	}
+	]
+}

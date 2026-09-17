@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+{% if cards %}
+<div class="card-grid">
+  {% for card in cards %}
+  <div class="card" data-action="navigate" data-target="{{ card.nav_target }}" data-label="{{ card.title }}">
+    <div class="card-title">{{ card.title }}</div>
+    {% for line in card.summary %}
+    <div class="card-line">{{ line }}</div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-note">No agents connected yet.</div>
+{% endif %}
+{% endblock %}

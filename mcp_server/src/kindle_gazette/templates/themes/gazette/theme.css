@@ -1,0 +1,192 @@
+/* Theme "gazette" — period broadsheet: engraved masthead between rules,
+   ornamental double rules, dinkus separator under the byline, ruled stories
+   with roman-numeral gutters, a two-column justified edition with a drop cap
+   (see this theme's article.html override), figures as "Fig. n" engravings.
+
+   The board's full masthead stack (folio line above the engraved title) needs
+   markup base.html doesn't have; this is the sanctioned simpler treatment —
+   rules above and below a centred engraved title, with the edition stamp as
+   the folio line beneath it.
+
+   Two-part theme.css: the required :root token block, then component
+   overrides (inlined after base.html's shared styles). Grayscale on
+   multiples of #11, local stacks only, tap targets ≥ 90px. */
+
+:root {
+  /* Type. Serif everywhere — the sans slot is aliased to the serif stack so
+     no data view drops out of period. */
+  --font-serif: Georgia, "DejaVu Serif", "Liberation Serif", serif;
+  --font-sans: Georgia, "DejaVu Serif", "Liberation Serif", serif;
+  --font-mono: Menlo, "DejaVu Sans Mono", "Liberation Mono", monospace;
+
+  --fs-masthead: 48px;       /* engraved inner-page title */
+  --fs-edition: 21px;        /* folio line */
+  --fs-section: 30px;
+  --fs-card-title: 42px;
+  --fs-body: 26px;
+  --fs-small: 22px;          /* folio register: wide-tracked uppercase */
+  --fs-button: 28px;
+  --fs-article-title: 56px;
+  --fs-article-heading: 26px; /* a deck, not a heading: centred tracked caps */
+  --fs-article-body: 25px;
+  --lh-body: 1.35;
+  --lh-article: 1.5;
+
+  --ink: #000;
+  --paper: #fff;
+  --ink-muted: #555;
+  --ink-faint: #888;
+  --rule-strong: #000;
+  --rule-faint: #bbb;
+
+  --progress-fill: #444;
+
+  --segment-1: #222;
+  --segment-2: #666;
+  --segment-3: #999;
+  --segment-4: #ccc;
+
+  --page-margin: 40px;
+  --gap: 20px;
+  --masthead-h: 150px;
+  --footer-h: 130px;
+  --button-h: 90px;          /* e-ink finger target minimum */
+  --exit-w: 200px;
+
+  --border-hairline: 2px;
+  --border-thin: 2px;
+  --border-card: 0px;        /* stories are ruled, not boxed */
+  --border-button: 3px;      /* double, not solid */
+  --masthead-rule: 4px;      /* plus a second 2px rule 4px below it */
+
+  --progress-bar-h: 24px;
+  --stacked-bar-h: 40px;
+
+  --article-column-gap: 44px; /* two columns with a rule between them */
+
+  /* Theme-local. */
+  --gazette-track: .14em;
+  --gazette-gutter: 74px;    /* roman-numeral story gutter */
+}
+
+/* ── Component overrides ─────────────────────────────────────────── */
+
+/* Masthead: rule → engraved centred title → folio line → 4px + 2px rules. */
+.masthead {
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  position: relative;
+  border-top: 3px solid var(--ink);
+  border-bottom: var(--masthead-rule) solid var(--ink);
+}
+.masthead::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;             /* 4px gap below the 4px rule */
+  height: 2px;
+  background: var(--ink);
+}
+.masthead-title {
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.edition-stamp {
+  margin-left: 0;
+  color: var(--ink);
+  font-size: 19px;
+  letter-spacing: var(--gazette-track);
+  text-transform: uppercase;
+}
+
+.content { padding: 30px var(--page-margin); }
+
+/* Front page: ruled story slots, each with a roman-numeral gutter separated
+   by a vertical rule. The numeral is decorative — nth-child, never data. */
+.card-grid {
+  grid-template-columns: 1fr;
+  grid-auto-rows: auto;
+  gap: 0;
+  counter-reset: gazette-story;
+}
+.card {
+  counter-increment: gazette-story;
+  border: none;
+  border-bottom: 2px solid var(--ink);
+  padding: 22px 0 22px calc(var(--gazette-gutter) + 26px);
+  position: relative;
+}
+.card::before {
+  content: counter(gazette-story, upper-roman);
+  position: absolute;
+  left: 0;
+  top: 22px;
+  bottom: 22px;
+  width: var(--gazette-gutter);
+  border-right: 2px solid var(--ink);
+  font-size: 44px;
+  line-height: 1.2;
+  text-align: center;
+}
+.card-title { letter-spacing: .02em; line-height: 1.1; }
+.card-line { font-style: italic; }
+
+/* Footer: double-ruled buttons in period register. */
+.btn {
+  border-style: double;
+  letter-spacing: var(--gazette-track);
+  text-transform: uppercase;
+}
+.hint { font-style: italic; }
+.page-indicator { letter-spacing: var(--gazette-track); text-transform: uppercase; }
+
+/* Index rows: an edition's link_list reads as a period contents list — every
+   entry closed by an ink rule, the note in the folio's italic register. */
+.flink-row { border-bottom-color: var(--ink); padding: 14px 0; }
+.flink-text { letter-spacing: .02em; }
+.flink-note { color: var(--ink); font-style: italic; }
+
+/* Charts as engravings: box frame, pale gridlines stand in for the plate
+   hatching, white-filled ringed points, a "Fig." caption. */
+.spark-frame { stroke: var(--ink); stroke-width: 3; }
+.spark-dot { fill: var(--paper); stroke: var(--ink); stroke-width: 4; r: 8px; }
+.fcallout-alert { letter-spacing: .04em; }
+.article-figure { counter-increment: gazette-fig; }
+.figure-caption { text-align: center; letter-spacing: .16em; text-transform: uppercase; }
+.figure-caption::before { content: "Fig. " counter(gazette-fig) " \2014  "; }
+
+/* Edition: centred title and byline, justified two-column flow with a rule
+   (columns come from this theme's article.html), drop cap on the opening
+   paragraph, decks instead of headings. */
+.article-title { text-align: center; line-height: 1.08; }
+.article-byline {
+  text-align: center;
+  letter-spacing: .16em;
+  border-bottom: none;
+  color: var(--ink);
+  font-size: 21px;
+}
+.article-byline::after {
+  content: "\2014 \00b7 \2014";
+  display: block;
+  letter-spacing: 0;
+  margin-top: 10px;
+}
+.article-flow { column-rule: 2px solid var(--ink); counter-reset: gazette-fig; }
+.article-flow p { hyphens: auto; -webkit-hyphens: auto; }
+.article-flow h2 {
+  text-align: center;
+  font-weight: normal;
+  letter-spacing: var(--gazette-track);
+  text-transform: uppercase;
+}
+.article-flow > p:first-of-type::first-letter {
+  float: left;
+  font-size: 96px;
+  line-height: .76;
+  font-weight: 700;
+  padding: 6px 12px 0 0;
+}
+.fcallout-note { border: none; border-left: 5px solid var(--ink); font-style: italic; font-size: 27px; }

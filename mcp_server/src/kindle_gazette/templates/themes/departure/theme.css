@@ -1,0 +1,185 @@
+/* Theme "departure" — station concourse: condensed caps, black organising
+   bands top and bottom, huge tabular numerals, rows that divide the board
+   evenly. Highest raw contrast of the set.
+
+   FONT DEPENDENCY: the design is built on a condensed sans
+   (--font-condensed). scripts/preview_themes.py runs a width check and warns
+   when no face in the chain is available — the regular-Helvetica fallback
+   breaks the layout (the row metrics assume condensed set widths). If the
+   render host has none, install the DejaVu/Liberation extras or drop this
+   theme from the shipped set; do not let it silently render in Helvetica.
+
+   One board departure from the spec: sparkline markers are round, not square
+   — the marker is an SVG <circle> shared by every theme, and CSS can size it
+   but not reshape it. Sized up (14px, 20px on the latest point) instead.
+
+   Two-part theme.css: the required :root token block, then component
+   overrides (inlined after base.html's shared styles). Grayscale on
+   multiples of #11, local stacks only, tap targets ≥ 90px. */
+
+:root {
+  /* Type. Condensed for all chrome and headings; plain sans for body prose
+     only. The serif slot is aliased to the sans so nothing drops out of
+     style. */
+  --font-sans: "Helvetica Neue", Helvetica, "DejaVu Sans", "Liberation Sans", Arial, sans-serif;
+  --font-serif: "Helvetica Neue", Helvetica, "DejaVu Sans", "Liberation Sans", Arial, sans-serif;
+  --font-mono: Menlo, "DejaVu Sans Mono", "Liberation Mono", monospace;
+
+  --fs-masthead: 64px;       /* condensed, bold, uppercase */
+  --fs-edition: 26px;        /* bold, boxed in a 3px paper outline */
+  --fs-section: 34px;
+  --fs-card-title: 52px;     /* condensed bold caps */
+  --fs-body: 28px;
+  --fs-small: 24px;
+  --fs-button: 34px;
+  --fs-article-title: 76px;  /* condensed caps */
+  --fs-article-heading: 34px;
+  --fs-article-body: 27px;
+
+  --lh-body: 1.3;
+  --lh-article: 1.45;
+
+  --ink: #000;
+  --paper: #fff;
+  --ink-muted: #555;
+  --ink-faint: #888;
+  --rule-strong: #000;
+  --rule-faint: #bbb;
+
+  --progress-fill: #000;
+
+  --segment-1: #222;
+  --segment-2: #666;
+  --segment-3: #999;
+  --segment-4: #ccc;
+
+  --page-margin: 30px;
+  --gap: 20px;
+  --masthead-h: 118px;       /* solid ink band */
+  --footer-h: 130px;         /* solid ink band, paper buttons */
+  --button-h: 90px;          /* e-ink finger target minimum */
+  --exit-w: 220px;
+
+  --border-hairline: 2px;
+  --border-thin: 3px;
+  --border-card: 3px;
+  --border-button: 0px;      /* buttons are paper blocks on the black band */
+  --masthead-rule: 3px;
+
+  --progress-bar-h: 30px;    /* 3px border, 24px fill */
+  --stacked-bar-h: 64px;     /* 4px border, 3px segment dividers */
+
+  --article-column-gap: 48px;
+
+  /* Theme-local. */
+  --font-condensed: "Arial Narrow", "DejaVu Sans Condensed",
+                    "Liberation Sans Narrow", "Helvetica Neue Condensed",
+                    Helvetica, sans-serif;
+  --departure-track: .06em;
+}
+
+/* ── Component overrides ─────────────────────────────────────────── */
+
+/* Masthead: solid black band, condensed caps, boxed edition stamp. */
+.masthead {
+  background: var(--ink);
+  color: var(--paper);
+  border-bottom: none;
+}
+.masthead-title {
+  font-family: var(--font-condensed);
+  letter-spacing: var(--departure-track);
+  text-transform: uppercase;
+}
+.edition-stamp {
+  font-family: var(--font-condensed);
+  color: var(--paper);
+  font-weight: bold;
+  border: 3px solid var(--paper);
+  padding: 6px 14px;
+  text-transform: uppercase;
+}
+
+/* Front page: departures — full-width rows dividing the band evenly, each
+   under a heavy rule. */
+.card-grid {
+  grid-template-columns: 1fr;
+  grid-auto-rows: 1fr;
+  gap: 0;
+}
+.card {
+  border: none;
+  border-bottom: var(--border-thin) solid var(--ink);
+  padding: 18px 8px;
+}
+.card-title {
+  font-family: var(--font-condensed);
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  line-height: 1.02;
+}
+
+/* Footer: black band, paper block buttons in condensed caps. */
+.footer { background: var(--ink); }
+.btn {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-condensed);
+  font-weight: bold;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.btn-exit { font-size: 38px; }
+.hint { color: var(--paper); font-family: var(--font-condensed); letter-spacing: .1em; text-transform: uppercase; }
+.page-indicator { color: var(--paper); font-family: var(--font-condensed); letter-spacing: .1em; }
+
+/* Figures: heavy frames, condensed numerals and labels. */
+.fstat-value { font-family: var(--font-condensed); letter-spacing: -.02em; }
+.fstat-label {
+  font-family: var(--font-condensed);
+  letter-spacing: .18em;
+  color: var(--ink);
+}
+.stacked-track { border-width: 4px; }
+.stacked-seg { border-right-width: 3px; }
+.figure-caption { font-family: var(--font-condensed); font-size: 28px; color: var(--ink); }
+
+/* Link rows: departure-board entries — condensed caps under a heavy rule,
+   the note set as the board's right-hand time column. */
+.flink-row { border-bottom: var(--border-thin) solid var(--ink); padding: 16px 8px; }
+.flink-text { font-family: var(--font-condensed); text-transform: uppercase; font-size: 34px; }
+.flink-note {
+  font-family: var(--font-condensed);
+  font-weight: bold;
+  font-size: 34px;
+  color: var(--ink);
+}
+
+/* Sparkline / line chart: heavy stroke, oversized point markers. */
+.spark-line { stroke-width: 7; }
+.spark-dot { r: 7px; }
+.spark-dot:last-of-type { r: 10px; }
+.spark-baseline { stroke: var(--ink); stroke-width: 3; }
+
+/* Edition: condensed chrome, plain-sans prose; section headings become black
+   inline blocks. */
+.article-title {
+  font-family: var(--font-condensed);
+  text-transform: uppercase;
+  line-height: .98;
+}
+.article-byline {
+  font-family: var(--font-condensed);
+  letter-spacing: .18em;
+  border-bottom: var(--border-thin) solid var(--ink);
+}
+.article-flow { font-family: var(--font-sans); }
+.article-flow h2 {
+  font-family: var(--font-condensed);
+  display: inline-block;
+  background: var(--ink);
+  color: var(--paper);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 6px 16px;
+}

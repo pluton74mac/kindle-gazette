@@ -1,0 +1,68 @@
+/* Theme "classic" — the default restrained broadsheet: serif masthead, sans
+   data, hairline rules.
+
+   Design tokens for the edition flow, its figures and the home grid. A
+   theme's theme.css is the single
+   place a pure restyle edits — templates reference only these custom
+   properties, never raw values. Everything must stay grayscale (e-ink) and
+   offline (no external URLs, no webfonts: local system stacks only). After
+   editing, call the `rerender` MCP tool to re-render all persisted views with
+   the new look. See templates/themes/README.md for adding a new theme. */
+
+:root {
+  /* Type. Serif masthead for the newspaper flavor; sans for data-dense body. */
+  --font-serif: Georgia, "DejaVu Serif", "Liberation Serif", serif;
+  --font-sans: "Helvetica Neue", Helvetica, "DejaVu Sans", "Liberation Sans", Arial, sans-serif;
+  --font-mono: Menlo, "DejaVu Sans Mono", "Liberation Mono", monospace;
+
+  --fs-masthead: 44px;
+  --fs-edition: 24px;
+  --fs-section: 32px;      /* home's empty-state note */
+  --fs-card-title: 30px;
+  --fs-body: 26px;         /* figure rows, card summaries */
+  --fs-small: 22px;        /* captions, notes, legends, hints */
+  --fs-button: 34px;
+  --fs-article-title: 46px;
+  --fs-article-heading: 30px;
+  --fs-article-body: 25px;
+
+  --lh-body: 1.35;
+  --lh-article: 1.45;
+
+  /* Ink. Panel-exact grays only (multiples of #11) so flat surfaces stay
+     flat instead of picking up dither texture. */
+  --ink: #000;
+  --paper: #fff;
+  --ink-muted: #555;
+  --ink-faint: #888;
+  --rule-strong: #000;
+  --rule-faint: #bbb;
+
+  --progress-fill: #444;       /* bars figure fill */
+
+  /* Stacked-bar segment palette, cycled in order. */
+  --segment-1: #222;
+  --segment-2: #666;
+  --segment-3: #999;
+  --segment-4: #ccc;
+
+  /* Layout. Screen is 1072x1448; the chrome heights below define the content
+     band between masthead and footer. */
+  --page-margin: 30px;
+  --gap: 20px;
+  --masthead-h: 96px;
+  --footer-h: 130px;         /* nav band: button + breathing room */
+  --button-h: 90px;          /* e-ink finger target minimum */
+  --exit-w: 180px;
+
+  --border-hairline: 1px;
+  --border-thin: 2px;
+  --border-card: 3px;
+  --border-button: 4px;
+  --masthead-rule: 5px;      /* double-rule feel under the masthead */
+
+  --progress-bar-h: 24px;    /* bars figure track */
+  --stacked-bar-h: 40px;     /* stacked_bar figure track */
+
+  --article-column-gap: 48px;
+}

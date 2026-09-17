@@ -1,0 +1,174 @@
+/* Theme "cupertino" — Apple reading grammar: a large bold title owning the
+   top of the page, grouped inset lists with hairline separators and chevrons,
+   gray secondary labels, soft 28px corners, a pill toolbar. Helvetica stands
+   in for SF. The one e-ink concession: Apple's #f2f2f7 group fill would
+   vanish on the panel, so groups are paper with a 2px #ccc outline and #ccc
+   separators inset from the left.
+
+   Two-part theme.css: the required :root token block, then component
+   overrides (inlined after base.html's shared styles). Grayscale on
+   multiples of #11, local stacks only, tap targets ≥ 90px. */
+
+:root {
+  /* Type. Sans in every slot; the serif slot is aliased so any unconverted
+     rule stays on-style. */
+  --font-sans: "Helvetica Neue", Helvetica, "DejaVu Sans", "Liberation Sans", Arial, sans-serif;
+  --font-serif: "Helvetica Neue", Helvetica, "DejaVu Sans", "Liberation Sans", Arial, sans-serif;
+  --font-mono: Menlo, "DejaVu Sans Mono", "Liberation Mono", monospace;
+
+  --fs-masthead: 64px;       /* the Large Title, weight 700 */
+  --fs-edition: 24px;        /* the gray label line above it */
+  --fs-section: 30px;
+  --fs-card-title: 34px;     /* weight 600 */
+  --fs-body: 26px;
+  --fs-small: 22px;
+  --fs-button: 30px;         /* weight 600, sentence case — never uppercase */
+  --fs-article-title: 62px;
+  --fs-article-heading: 34px;
+  --fs-article-body: 28px;
+
+  --lh-body: 1.35;
+  --lh-article: 1.5;
+
+  --ink: #000;
+  --paper: #fff;
+  --ink-muted: #555;
+  --ink-faint: #888;         /* chevrons */
+  --rule-strong: #000;
+  --rule-faint: #ccc;
+
+  --progress-fill: #000;
+
+  --segment-1: #222;
+  --segment-2: #666;
+  --segment-3: #999;
+  --segment-4: #ccc;
+
+  --page-margin: 44px;
+  --gap: 20px;
+  --masthead-h: 170px;       /* label line + Large Title, not a fixed bar */
+  --footer-h: 150px;
+  --button-h: 90px;          /* e-ink finger target minimum */
+  --exit-w: 200px;
+
+  --border-hairline: 2px;
+  --border-thin: 2px;
+  --border-card: 2px;        /* the group outline */
+  --border-button: 0px;      /* pills are filled */
+  --masthead-rule: 0px;      /* no rule under the Large Title */
+
+  --progress-bar-h: 18px;    /* fully rounded, #ccc track */
+  --stacked-bar-h: 32px;     /* rounded 16px, no dividers */
+
+  --article-column-gap: 48px;
+
+  /* Theme-local. */
+  --cupertino-radius-group: 28px;
+  --cupertino-radius-pill: 45px;   /* half of --button-h */
+}
+
+/* ── Component overrides ─────────────────────────────────────────── */
+
+/* Masthead: not a bar — a small gray label line above a left-aligned Large
+   Title, no rule. (The DOM order is title, stamp; column-reverse puts the
+   stamp on top.) */
+.masthead {
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  border-bottom: none;
+}
+.masthead-title { letter-spacing: -.02em; }
+.edition-stamp { margin-left: 0; }
+
+/* Front page: one rounded, outlined group; cards are rows inside it with
+   inset separators and a trailing chevron. */
+.card-grid {
+  height: auto;
+  grid-template-columns: 1fr;
+  grid-auto-rows: auto;
+  gap: 0;
+  border: var(--border-card) solid var(--rule-faint);
+  border-radius: var(--cupertino-radius-group);
+  overflow: hidden;
+}
+.card {
+  border: none;
+  padding: 26px 80px 26px 28px;
+  position: relative;
+}
+.card + .card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 28px;
+  right: 0;
+  height: 2px;
+  background: var(--rule-faint);
+}
+.card::after {
+  content: "\203A";          /* › */
+  position: absolute;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 40px;
+  color: var(--ink-faint);
+}
+.card-title { font-weight: 600; letter-spacing: -.01em; }
+.card-line { color: var(--ink-muted); }
+
+/* Footer: a toolbar of pills; the primary action is the filled black pill. */
+.btn {
+  background: var(--rule-faint);
+  border-radius: var(--cupertino-radius-pill);
+  font-weight: 600;
+  padding: 0 30px;
+}
+.btn-exit { background: var(--ink); color: var(--paper); }
+
+/* Figures: everything rounded, no borders on tracks. */
+.fcallout-alert { border-radius: var(--cupertino-radius-group); padding: 24px var(--gap); font-weight: 600; }
+.fcallout-note { border-color: var(--rule-faint); border-radius: var(--cupertino-radius-group); padding: 24px 28px; }
+.fstat-value { letter-spacing: -.05em; }
+.pbar-track { border: none; padding: 0; background: var(--rule-faint); border-radius: 9px; overflow: hidden; }
+.pbar-fill { border-radius: 9px; }
+.stacked-track { border: none; border-radius: 16px; overflow: hidden; }
+.stacked-seg { border-right: none; }
+.legend-swatch { border: none; border-radius: 6px; }
+
+/* Link rows: the grouped inset list — the theme's native navigation control.
+   Hairline separators inset from the text, a trailing chevron on every row,
+   the whole group in a rounded outline. */
+.flink {
+  border: var(--border-card) solid var(--rule-faint);
+  border-radius: var(--cupertino-radius-group);
+  overflow: hidden;
+  padding: 0 28px;
+}
+.flink-row {
+  position: relative;
+  border-bottom-color: var(--rule-faint);
+  padding: 22px 52px 22px 0;
+}
+.flink-row::after {
+  content: "\203A";          /* › */
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 40px;
+  color: var(--ink-faint);
+}
+.flink-note { color: var(--ink-muted); }
+
+/* Charts: white-filled point markers with a black ring. */
+.spark-line { stroke-width: 5; }
+.spark-dot { fill: var(--paper); stroke: var(--ink); stroke-width: 6; r: 16px; }
+
+/* Edition: big bold title, roomy prose, unjustified reads more native. */
+.article-title { letter-spacing: -.025em; }
+.article-byline { border-bottom: none; text-transform: none; letter-spacing: 0; font-size: var(--fs-edition); }
+.article-flow p { text-align: left; }
+.article-flow h2 { font-weight: 700; letter-spacing: -.01em; }
